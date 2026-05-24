@@ -81,8 +81,11 @@ def make_leave_embed(member: discord.Member) -> discord.Embed:
 
 @bot.event
 async def on_ready():
+    guild = discord.Object(id=1508016021867462767)
+    tree.copy_global_to(guild=guild)
+    await tree.sync(guild=guild)
     await tree.sync()
-    print(f"Logged in as {bot.user} | Slash commands synced")
+    print(f"Logged in as {bot.user} | Commands synced")
 
 
 @bot.event
