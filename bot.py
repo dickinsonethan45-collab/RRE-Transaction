@@ -1,5 +1,4 @@
 import discord
-import aiohttp
 from discord import app_commands
 from discord.ext import commands
 import json
@@ -485,38 +484,5 @@ async def pending_command(interaction: discord.Interaction):
 
 # ── Run ───────────────────────────────────────────────────────────────────────
 
-# ── AC Token Update ──────────────────────────────────────────────────────────
-
-RAILWAY_URL = "https://ac-auth67-production.up.railway.app"
-
-@tree.command(name="updatetoken", description="(Owner) Update the AC auth backend token")
-@app_commands.describe(
-    token="The fresh AC session token",
-    refresh_token="The fresh AC refresh token"
-)
-async def updatetoken_command(interaction: discord.Interaction, token: str, refresh_token: str):
-    if interaction.user.id not in OWNERS:
-        await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
-        return
-    await interaction.response.defer(ephemeral=True)
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                f"{RAILWAY_URL}/update-tokens",
-                json={"token": token, "refresh_token": refresh_token},
-                headers={"Content-Type": "application/json"},
-            ) as resp:
-                if resp.status == 200:
-                    embed = discord.Embed(
-                        title="✅ AC Token Updated",
-                        description="Railway backend has been updated with fresh tokens.",
-                        color=0x2ECC71,
-                        timestamp=datetime.now(timezone.utc),
-                    )
-                    await interaction.followup.send(embed=embed, ephemeral=True)
-                else:
-                    await interaction.followup.send(f"❌ Failed to update Railway: {resp.status}", ephemeral=True)
-    except Exception as e:
-        await interaction.followup.send(f"❌ Error: {e}", ephemeral=True)
 
 bot.run(BOT_TOKEN)
